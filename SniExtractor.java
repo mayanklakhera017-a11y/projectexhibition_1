@@ -22,5 +22,24 @@ public class SniExtractor {
     // so jump past it to get to the actual handshake data
     if (payload.length < 5 + 4) return Optional.empty();
     buffer.position(5);
-  }
+
+    // Inside the handshake, the first byte says what kind of message
+    // this is. We only want ClientHello, marked as 0x01.
+    byte handshakeType = buffer.get();
+    if (handshakeType != 0x01) {
+      return Optional.empty();
+    }
+   
+   // Skip past stuff we don't need right now:
+   // 3 bytes = handshake length, 2 bytes = TLS version, 32 bytes = random value.
+   buffer.position(buffer.position() + 37);
+
+   //session ID length
+   if (buffer.remaining() < 1) return Optional.empty();
+    int sessionIdLen = Byte.toUnsignedInt(buffer.get());
+    if (buffer.remaining() < sessionIdLen + 2) return Optional.empty();
+    buffer.position(buffer.position() + sessionIdLen);
+    
+
+    }
 }
