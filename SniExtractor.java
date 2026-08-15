@@ -39,7 +39,48 @@ public class SniExtractor {
     int sessionIdLen = Byte.toUnsignedInt(buffer.get());
     if (buffer.remaining() < sessionIdLen + 2) return Optional.empty();
     buffer.position(buffer.position() + sessionIdLen);
-    
 
-    }
+    // Same idea for cipher suites — read the length, then skip past them.
+    int cipherSuitesLen = Short.toUnsignedInt(buffer.getShort());  
+    if (buffer.remaining() < cipherSuitesLen + 1) return Optional.empty();
+    buffer.position(buffer.position() + cipherSuitesLen);
+
+   // Extensions Length
+   int extensionLen = Short.toUnsignedInt(buffer.getShort());
+   if (buffer.remaining() < extensionsLen) return Optional.empty();
+   
+   int endExtensions = buffer.position() + extensionsLen;
+
+   // Loop through TLS extensions
+   while (buffer.position() + 4 <= endExtensions) {
+    int extType = Short.toUnsignedInt(buffer.getShort());
+    int extLen = Short.toUnsignedInt(buffer.getShort());
+
+    if (extType == 0) { // Extension 0 = Server Name Indication (SNI)
+        if (buffer.remaining() < extLen) return Optional.empty();
+
+        // The SNI extension has its own internal structure. The first two bytes
+        // are the length of the SNI list, then each entry has a type and length
+        buffer.getShort();
+
+        byte nameType = buffer.get();
+        if (nameType == 0) {
+          int nameLen = Short.toUnsignedInt(buffer.getShort());
+          byte[] nameBytes = new byte[nameLen];
+          buffer.get(nameBytes);
+          String sni = new String(nameBytes, StandardCharsets.UTF_8);
+          return Optional.of(sni);
+        }
+
+   }else {
+    // Skip other extensions
+    if (buffer.remaining() < extLen) break;
+    buffer.position(buffer.position() + extLen);
+  }
+}    
+
+return Optional.empty();
+  }
+
+      
 }
