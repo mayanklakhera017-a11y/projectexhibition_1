@@ -46,7 +46,7 @@ public class SniExtractor {
     buffer.position(buffer.position() + cipherSuitesLen);
 
    // Extensions Length
-   int extensionLen = Short.toUnsignedInt(buffer.getShort());
+   int extensionsLen = Short.toUnsignedInt(buffer.getShort());
    if (buffer.remaining() < extensionsLen) return Optional.empty();
    
    int endExtensions = buffer.position() + extensionsLen;
