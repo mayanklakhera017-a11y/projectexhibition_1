@@ -1,14 +1,12 @@
 import java.io.File;
-import java.io.IOException;     
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
-
 
 public class Main {
     public static void main(String[] args) {
@@ -19,14 +17,15 @@ public class Main {
             System.out.println("No valid PCAP file selected. Exiting.");
             return;
         }
-         System.out.println("     ");
+
+        System.out.println("\n==================================================");
         System.out.println("        PACKET ANALYZER - DPI ENGINE             ");
-        System.out.println("      ");
+        System.out.println("==================================================");
         System.out.println("Processing file: " + pcapFile + "\n");
 
-  long startTime = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
 
-
+        // Metrics & Tracking Data
         int totalPackets = 0;
         int parsedPackets = 0;
         int sniCount = 0;
@@ -38,7 +37,7 @@ public class Main {
         Set<String> blockedWebsites = new HashSet<>();
         Blocklist blocklist = new Blocklist();
 
-try (PcapReader reader = new PcapReader(pcapFile)) {
+        try (PcapReader reader = new PcapReader(pcapFile)) {
             byte[] packetBytes;
 
             while ((packetBytes = reader.readNextPacket()) != null) {
@@ -77,10 +76,13 @@ try (PcapReader reader = new PcapReader(pcapFile)) {
             }
 
             long duration = System.currentTimeMillis() - startTime;
-        
-         System.out.println("    ");
+
+            // ==================================================
+            //             SUMMARY REPORT DISPLAY
+            // ==================================================
+            System.out.println("\n==================================================");
             System.out.println("             EXECUTION SUMMARY REPORT             ");
-            System.out.println("         ");
+            System.out.println("==================================================");
             System.out.printf("  Total Packets Captured : %d\n", totalPackets);
             System.out.printf("  Successfully Parsed    : %d\n", parsedPackets);
             System.out.printf("  SNI Records Identified : %d\n", sniCount);
@@ -93,7 +95,8 @@ try (PcapReader reader = new PcapReader(pcapFile)) {
             for (Map.Entry<PacketTypes.Protocol, Integer> entry : protocolCounts.entrySet()) {
                 double percentage = (entry.getValue() * 100.0) / parsedPackets;
                 System.out.printf("    • %-8s : %d (%.1f%%)\n", entry.getKey(), entry.getValue(), percentage);
-            }System.out.println("");
+            }
+            System.out.println("--------------------------------------------------");
             System.out.println("  Accessed Websites / Domains Identified:");
             if (accessedWebsites.isEmpty()) {
                 System.out.println("    • No TLS SNI domains detected.");
@@ -103,15 +106,18 @@ try (PcapReader reader = new PcapReader(pcapFile)) {
                     System.out.println("    • " + domain + tag);
                 }
             }
-            System.out.println("      ");
+            System.out.println("--------------------------------------------------");
             System.out.printf("  Processing Time       : %d ms\n", duration);
-            System.out.println("\n");
+            System.out.println("==================================================\n");
 
         } catch (IOException e) {
             System.err.println("Error reading PCAP file: " + e.getMessage());
         }
     }
 
+    /**
+     * Helper function to discover and let the user select a PCAP file interactively.
+     */
     private static String selectPcapFile(Scanner scanner) {
         File currentDir = new File(".");
         File[] files = currentDir.listFiles((dir, name) -> name.toLowerCase().endsWith(".pcap"));
@@ -123,9 +129,9 @@ try (PcapReader reader = new PcapReader(pcapFile)) {
             }
         }
 
-        System.out.println("      ");
+        System.out.println("==================================================");
         System.out.println("               SELECT A PCAP FILE                 ");
-        System.out.println("      ");
+        System.out.println("==================================================");
 
         if (pcapFiles.isEmpty()) {
             System.out.println("No .pcap files found in current directory.");
@@ -152,7 +158,7 @@ try (PcapReader reader = new PcapReader(pcapFile)) {
                 System.out.println("Invalid selection. Defaulting to custom prompt.");
             }
         } catch (NumberFormatException e) {
-            
+            // User might have directly typed a file name instead of a number
             if (new File(input).exists()) {
                 return input;
             }
