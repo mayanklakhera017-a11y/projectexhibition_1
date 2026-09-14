@@ -17,11 +17,9 @@ public class Main {
             System.out.println("No valid PCAP file selected. Exiting.");
             return;
         }
-
-        System.out.println("\n==================================================");
         System.out.println("        PACKET ANALYZER - DPI ENGINE             ");
-        System.out.println("==================================================");
         System.out.println("Processing file: " + pcapFile + "\n");
+        System.out.println("    ");
 
         long startTime = System.currentTimeMillis();
 
@@ -80,23 +78,23 @@ public class Main {
             // ==================================================
             //             SUMMARY REPORT DISPLAY
             // ==================================================
-            System.out.println("\n==================================================");
+            System.out.println("    ");
             System.out.println("             EXECUTION SUMMARY REPORT             ");
-            System.out.println("==================================================");
+            System.out.println("    ");
             System.out.printf("  Total Packets Captured : %d\n", totalPackets);
             System.out.printf("  Successfully Parsed    : %d\n", parsedPackets);
             System.out.printf("  SNI Records Identified : %d\n", sniCount);
-            System.out.println("--------------------------------------------------");
+            System.out.println("            ");
             System.out.println("  Action Metrics:");
             System.out.printf("    • Forwarded Packets  : %d\n", forwardedPackets);
             System.out.printf("    • Blocked Packets    : %d\n", blockedPackets);
-            System.out.println("--------------------------------------------------");
+            System.out.println("                 ");
             System.out.println("  Protocol Breakdown:");
             for (Map.Entry<PacketTypes.Protocol, Integer> entry : protocolCounts.entrySet()) {
                 double percentage = (entry.getValue() * 100.0) / parsedPackets;
                 System.out.printf("    • %-8s : %d (%.1f%%)\n", entry.getKey(), entry.getValue(), percentage);
             }
-            System.out.println("--------------------------------------------------");
+            System.out.println("                  ");
             System.out.println("  Accessed Websites / Domains Identified:");
             if (accessedWebsites.isEmpty()) {
                 System.out.println("    • No TLS SNI domains detected.");
@@ -106,9 +104,9 @@ public class Main {
                     System.out.println("    • " + domain + tag);
                 }
             }
-            System.out.println("--------------------------------------------------");
+            System.out.println("           ");
             System.out.printf("  Processing Time       : %d ms\n", duration);
-            System.out.println("==================================================\n");
+            System.out.println("       ");
 
         } catch (IOException e) {
             System.err.println("Error reading PCAP file: " + e.getMessage());
@@ -129,9 +127,9 @@ public class Main {
             }
         }
 
-        System.out.println("==================================================");
+        System.out.println("               ");
         System.out.println("               SELECT A PCAP FILE                 ");
-        System.out.println("==================================================");
+        System.out.println("                   ");
 
         if (pcapFiles.isEmpty()) {
             System.out.println("No .pcap files found in current directory.");

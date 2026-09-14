@@ -40,7 +40,7 @@ public class Blocklist {
         // (ad/tracker domains here just so the tool blocks *something*
         // out of the box; swap in real threat-intel / malicious domains
         // for the exhibition if you want a more realistic demo).
-        blockedDomains.add("doubleclick.net");
+        blockedDomains.add("youtube.com");
         blockedDomains.add("googlesyndication.com");
         blockedDomains.add("adservice.google.com");
     }
